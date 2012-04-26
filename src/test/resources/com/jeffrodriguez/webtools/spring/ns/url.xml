@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:webtools="http://oss.jeffrodriguez.com/schema/webtools/spring"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://oss.jeffrodriguez.com/schema/webtools/spring
+       http://oss.jeffrodriguez.com/schema/webtools/spring.xsd">
+
+    <webtools:url id="url" base="http://www.example.com/">
+        <webtools:parameter name="foo" value="bar"/>
+        <webtools:parameter name="foo" value="baz"/>
+        <webtools:parameter name="qux" value="quux"/>
+    </webtools:url>
+</beans>
