@@ -25,6 +25,7 @@
  */
 package com.jeffrodriguez.webtools.client;
 
+import com.jeffrodriguez.xmlwrapper.XML;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -63,6 +64,10 @@ public interface WebClient {
     Document getDocument(String url) throws IOException, ParserConfigurationException, SAXException;
 
     Document postDocument(String url, Document data) throws IOException, TransformerException, SAXException, ParserConfigurationException;
+
+    XML getXML(String url) throws IOException, ParserConfigurationException, SAXException;
+
+    XML postXML(String url, XML data) throws IOException, TransformerException, SAXException, ParserConfigurationException;
 
     JSOG getJsog(String url) throws IOException;
 

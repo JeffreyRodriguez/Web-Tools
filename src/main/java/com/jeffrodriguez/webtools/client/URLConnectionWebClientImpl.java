@@ -25,6 +25,7 @@
  */
 package com.jeffrodriguez.webtools.client;
 
+import com.jeffrodriguez.xmlwrapper.XML;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -270,6 +271,46 @@ public class URLConnectionWebClientImpl implements WebClient {
         // Get the result
         return disconnectAndReturn(connection,
                 buildDocument(connection.getInputStream()));
+    }
+
+    @Override
+    public XML getXML(String url) throws IOException, ParserConfigurationException, SAXException {
+        logger.log(Level.INFO, "Getting Document from {0}", url);
+
+        // Build and connect
+        HttpURLConnection connection = buildConnection(url);
+        connection.connect();
+
+        // Check for errors
+        checkForErrors(connection);
+
+        // Get the result
+        Document document = buildDocument(connection.getInputStream());
+        return disconnectAndReturn(connection, new XML(document));
+    }
+
+    @Override
+    public XML postXML(String url, XML data) throws IOException, TransformerException, SAXException, ParserConfigurationException {
+        logger.log(Level.INFO, "Posting document to {0}", url);
+
+        // Build and connect
+        HttpURLConnection connection = buildConnection(url);
+        connection.setDoOutput(true);
+        OutputStream out = connection.getOutputStream();
+        connection.connect();
+
+        // Write the document
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.transform(new DOMSource(data.getDocument()), new StreamResult(out));
+        out.flush();
+        out.close();
+
+        // Check for errors
+        checkForErrors(connection);
+
+        // Get the result
+        Document document = buildDocument(connection.getInputStream());
+        return disconnectAndReturn(connection, new XML(document));
     }
 
     @Override

@@ -6,7 +6,7 @@
        http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://oss.jeffrodriguez.com/schema/webtools/spring
-       http://oss.jeffrodriguez.com/schema/webtools/spring.xsd">
+       https://raw.github.com/JeffreyRodriguez/Web-Tools/master/src/main/resources/com/jeffrodriguez/webtools/webtools.xsd">
 
     <webtools:url id="url" base="http://www.example.com/">
         <webtools:parameter name="foo" value="bar"/>
