@@ -53,7 +53,11 @@ public interface WebClient {
      */
     void get(String url, OutputStream out) throws IOException;
 
+    byte[] get(String url, Map<String, List<String>> headers) throws IOException;
+
     byte[] get(String url) throws IOException;
+
+    byte[] post(String url, byte[] data, Map<String, List<String>> headers) throws IOException;
 
     byte[] post(String url, byte[] data) throws IOException;
 

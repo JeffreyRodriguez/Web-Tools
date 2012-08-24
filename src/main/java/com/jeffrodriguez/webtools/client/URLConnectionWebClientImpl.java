@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -160,12 +161,50 @@ public class URLConnectionWebClientImpl implements WebClient {
     }
 
     @Override
+    public byte[] get(String url, Map<String, List<String>> headers) throws IOException {
+        logger.log(Level.INFO, "Getting byte[] from {0}", url);
+
+        // Build and connect
+        HttpURLConnection connection = buildConnection(url);
+        applyHeaders(connection, headers);
+        connection.connect();
+
+        // Check for errors
+        checkForErrors(connection);
+
+        // Get the result
+        return disconnectAndReturn(connection, IOUtils.toByteArray(connection.getInputStream()));
+    }
+
+    @Override
     public byte[] get(String url) throws IOException {
         logger.log(Level.INFO, "Getting byte[] from {0}", url);
 
         // Build and connect
         HttpURLConnection connection = buildConnection(url);
         connection.connect();
+
+        // Check for errors
+        checkForErrors(connection);
+
+        // Get the result
+        return disconnectAndReturn(connection, IOUtils.toByteArray(connection.getInputStream()));
+    }
+
+    @Override
+    public byte[] post(String url, byte[] data, Map<String, List<String>> headers) throws IOException {
+
+        // Build and connect
+        HttpURLConnection connection = buildConnection(url);
+        applyHeaders(connection, headers);
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.connect();
+
+        // Send the request
+        connection.getOutputStream().write(data);
+        connection.getOutputStream().flush();
+        connection.getOutputStream().close();
 
         // Check for errors
         checkForErrors(connection);
@@ -367,6 +406,53 @@ public class URLConnectionWebClientImpl implements WebClient {
 
         // Get the headers
         return disconnectAndReturn(connection, connection.getHeaderFields());
+    }
+
+    /**
+     * Applies a set of headers to the connection.
+     * @param connection the connection.
+     * @param headers the headers
+     */
+    private void applyHeaders(HttpURLConnection connection, Map<String, List<String>> headers) {
+
+        //  Make sure there are headers to apply
+        if (headers == null || headers.isEmpty()) {
+            return;
+        }
+
+        // Apply the headers
+        for (Map.Entry<String, List<String>> header : headers.entrySet()) {
+            if (header.getValue() != null && header.getValue().size() > 0) {
+
+                /* Concatenate the header values, based on the note in setRequestProperty:
+                 * NOTE: HTTP requires all request properties which can legally have multiple
+                 * instances with the same key to use a comma-seperated list syntax which
+                 * enables multiple properties to be appended into a single property.
+                 */
+                StringBuilder headerValue = new StringBuilder();
+                Iterator<String> it = header.getValue().iterator();
+                while (it.hasNext()) {
+
+                    // Get the value
+                    String value = it.next();
+                    if (value == null) {
+                        value = "";
+                    }
+
+                    // Append the value
+                    headerValue.append(value);
+
+                    // Add a comma if there are more values
+                    if (it.hasNext()) {
+                        headerValue.append(',');
+                    }
+                }
+
+                // Set the header
+                connection.setRequestProperty(header.getKey(), headerValue.toString());
+            }
+        }
+
     }
 
 }
