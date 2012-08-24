@@ -340,6 +340,7 @@ public class URLConnectionWebClientImpl implements WebClient {
         connection.connect();
 
         // Send the request
+        connection.setRequestProperty("Content-Type", "application/json; charset=ISO-8859-1");
         connection.getOutputStream().write(data.toString().getBytes("ISO-8859-1"));
         connection.getOutputStream().flush();
         connection.getOutputStream().close();
